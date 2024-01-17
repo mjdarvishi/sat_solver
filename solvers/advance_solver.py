@@ -1,9 +1,9 @@
 from pysat.solvers import Glucose3
 from pysat.formula import CNF
 
-def sat_solver_with_advanced_features(cnf_clauses):
-    cnf_formula = CNF()
-    cnf_formula.clauses.extend(cnf_clauses)
+def cdcl_sat_salver(cnf_clauses):
+    # cnf_formula = CNF()
+    # cnf_formula.clauses.extend(cnf_clauses)
     # Create a solver instance with proof generation enabled
     solver = Glucose3(bootstrap_with=[], with_proof=True)
 
@@ -14,24 +14,29 @@ def sat_solver_with_advanced_features(cnf_clauses):
     proof_clauses = []
 
     # Add clauses with two watched literals and update variable scores
-    for clause in cnf_formula.clauses:
-        watch_literals(clause, solver, variable_scores)
+    for clause in cnf_clauses:
+        if len(clause)>0:
+            watch_literals(clause, solver, variable_scores)
 
     # Assume all variables are initially undecided (unassigned)
     decisions = []
     propagations = []
+    decision_levels={}
+    model=None
+    satiffaible=False
     while True:
         # PART(C)
         # Choose a variable to make a decision based on the VSIDS heuristic
         decision_variable = choose_variable(variable_scores)
-
         # If there are no more decisions, the problem is solved
         if decision_variable is None:
-            print("Satisfiable! Model:", solver.get_model())
+            model= solver.get_model()
+            satiffaible=True
             break
 
         # Make the decision
         decisions.append(decision_variable)
+        decision_levels[decision_variable] = len(decisions)
         solver.add_clause([decision_variable])
 
         # Store the decision clause for proof generation
@@ -42,18 +47,17 @@ def sat_solver_with_advanced_features(cnf_clauses):
 
         # If the problem is satisfiable, get the model
         if is_satisfiable:
-            model = solver.get_model()
-            print("Satisfiable! Model:", model)
+            model= solver.get_model()
+            satiffaible=True
             break
         else:
             # PART(A)
             # Analyze conflict and backtrack using First-UIP heuristic
-            conflict = solver.get_conflict()
+            conflict = solver.get_proof()
             learned_clause = analyze_conflict(conflict, solver)
             if not learned_clause:
-                print("Unsatisfiable")
+                satiffaible=False
                 break
-
             # Add the learned clause to the solver and update variable scores
             watch_literals(learned_clause, solver, variable_scores)
             solver.add_clause(learned_clause)
@@ -64,8 +68,8 @@ def sat_solver_with_advanced_features(cnf_clauses):
             # Update decisions based on the learned clause
             backtrack_level = update_decisions(learned_clause, decisions)
             if backtrack_level == 0:
-                print("Unsatisfiable")
-                break
+                satiffaible=False
+                break              
 
             # Backtrack to the specified decision level
             solver.cancel_until(backtrack_level)
@@ -75,6 +79,7 @@ def sat_solver_with_advanced_features(cnf_clauses):
     # Generate a proof based on the stored clauses
     proof = generate_proof(proof_clauses, solver)
     print("Proof:", proof)
+    return satiffaible,model,proof
 
 def watch_literals(clause, solver, variable_scores):
     # Add a clause with two watched literals to the solver
@@ -109,16 +114,16 @@ def update_decisions(learned_clause, decisions):
             backtrack_level = max(backtrack_level, decisions.index(var) + 1)
     return backtrack_level
 
-def analyze_conflict(conflict, solver):
+def analyze_conflict(conflict, decision_levels):
     # Sort the literals in the conflict clause by their decision levels
-    sorted_literals = sorted(conflict, key=lambda lit: solver.level(abs(lit)), reverse=True)
+    sorted_literals = sorted(conflict, key=lambda lit: decision_levels.get(abs(lit), 0), reverse=True)
 
     # Identify the UIP literal (the first literal with a unique decision level)
     unique_levels = set()
     uip_literal = None
 
     for lit in sorted_literals:
-        level = solver.level(abs(lit))
+        level = decision_levels.get(abs(lit), 0)
 
         if level not in unique_levels:
             unique_levels.add(level)
@@ -139,7 +144,7 @@ def generate_proof(clauses, solver):
             break
 
         # Add the learned clause to the proof clauses
-        proof_clauses.append(learned_clause)
+        proof_clauses.extend(learned_clause)
 
         # Update decisions based on the learned clause
         backtrack_level = update_decisions(learned_clause, decisions)
@@ -149,4 +154,3 @@ def generate_proof(clauses, solver):
 
     # Return the proof as a list of clauses
     return proof_clauses
-
