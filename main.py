@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import os
 from utils.file_utility import read_cnf_file
-from solvers.advance_solver import cdcl_sat_salver
+from solvers.advance_solver import cdcl_sat_solver
 app = Flask(__name__)
 @app.route('/')
 def home():
@@ -21,8 +21,9 @@ def upload():
     # For example, you can save it or perform operations on its content
     file.save(os.path.join('public', file.filename))
     clouses=read_cnf_file('public/'+file.filename)
-    result=cdcl_sat_salver(clouses)
-    return result
+    satisfiable, model, proof=cdcl_sat_solver(clouses)
+    print(satisfiable, model, proof)
+    return satisfiable
 
 @app.route('/upload-text', methods=['POST'])
 def upload_text():
