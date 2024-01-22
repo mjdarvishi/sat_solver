@@ -6,33 +6,51 @@
     <title>File Upload</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
             margin: 20px;
+            text-align: center;
         }
 
         h1 {
             color: #333;
+            margin-bottom: 30px;
         }
 
         form {
             max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            color: #555;
         }
 
         input[type="file"] {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
 
         textarea {
             width: 100%;
             height: 150px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             resize: vertical;
+            box-sizing: border-box;
         }
 
         button {
@@ -42,6 +60,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         button:hover {
@@ -50,17 +69,18 @@
     </style>
 </head>
 <body>
-    <h1>File Upload</h1>
+    <h1>CDCL SAT SOLVER</h1>
+
     <form action="/upload" method="post" enctype="multipart/form-data">
         <label for="file">Choose a file:</label>
         <input type="file" id="file" name="file" accept=".txt, .cnf">
         <br>
-        <button type="submit">Upload File</button>
+        <button type="submit">Upload and solve</button>
     </form>
 
     <form action="/upload-text" method="post">
         <label for="text">Or enter text:</label>
-        <textarea id="text" name="text"></textarea>
+        <textarea id="text" name="text" placeholder="Type your text here..."></textarea>
         <br>
         <button type="submit">Upload Text</button>
     </form>

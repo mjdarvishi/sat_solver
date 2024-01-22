@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Solver Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SAT Solver Result</h1>
+    
+    {% if result %}
+        <p>Assignment verified:</p>
+        <ul>
+            {% for lit in result %}
+                <li>{{ lit }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>UNSAT - No satisfying assignment found.</p>
+    {% endif %}
+    
+    <p><a href="/">Back to Prevoise Page</a></p>
+</body>
+</html>

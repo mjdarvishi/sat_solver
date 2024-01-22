@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request
 import os
-from utils.file_utility import read_cnf_file
-from solvers.advance_solver import cdcl_sat_solver
-from solvers.cdcl_solver import CDCL_solve
+from utils.file_utility import read_cnf_file,read_cnf_text
+from solver.cdcl_solver import CDCL_SAT_SOLVER
 
 app = Flask(__name__)
 @app.route('/')
@@ -23,22 +22,35 @@ def upload():
     # For example, you can save it or perform operations on its content
     file.save(os.path.join('public', file.filename))
     num_var,num_claus,clauses=read_cnf_file('public/'+file.filename)
-    solution = CDCL_solve(clauses,num_var)  
+    sat_solver = CDCL_SAT_SOLVER()  
+    solution=sat_solver.solve(clauses,num_var)
     if solution[0] != -1:
         print("Assignment verified")
         assn = solution[0][:]
         assn.sort(key=abs)
-        return "\n".join(str(lit) for lit in assn)
+        return render_template('result.html',reuslt="\n".join(str(lit) for lit in assn))
     else :
-       return "UNSAT"
+        return render_template('result.html')
         
 
 @app.route('/upload-text', methods=['POST'])
 def upload_text():
-    # Handle text upload logic here
-    text = request.form['text']
-    # Process the text as needed
-    return f"Text uploaded successfully: {text}"
+    if request.method == 'POST':
+        # Text input logic
+        cnf_text = request.form['text']
+        num_var, num_claus, clauses = read_cnf_text(cnf_text)
+
+        # Rest of your code (as you provided)
+        sat_solver = CDCL_SAT_SOLVER()
+        solution = sat_solver.solve(clauses, num_var)
+        if solution[0] != -1:
+            print("Assignment verified")
+            assn = solution[0][:]
+            assn.sort(key=abs)
+            return render_template('result.html',result="\n".join(str(lit) for lit in assn))
+        else:
+            return render_template('result.html')
+    return 'not valid input'
 if __name__ == '__main__':
     app.run(debug=True)
 
