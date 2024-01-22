@@ -1,5 +1,5 @@
 import random
-from solvers.vsids import VSIDS_conflict,VSIDS_decay,VSIDS_decide,VSIDS_init
+from solvers.vsids import VSIDS
 
 def bcp(clauses, literal):                    #Boolean Constant Propagation on Literal
     new_claus_set = [x[:] for x in clauses]   #Using SLicing Technique: Fastest available in Python
@@ -11,8 +11,6 @@ def bcp(clauses, literal):                    #Boolean Constant Propagation on L
             if not x:                         #if this makes a clause Empty , UNSAT
                 return -1
     return new_claus_set
-
-
 
 def unit_propagation(clauses):               # Propogate Unit Clauses and add implications to M
     assignment = []
@@ -30,7 +28,6 @@ def unit_propagation(clauses):               # Propogate Unit Clauses and add im
             if not clauses:                   
                 return clauses, assignment
     return clauses, assignment
-
 
 def create_watchList(clauses,M,num_var):          # Create the 2-literal watch data structure
     literal_watch = {}                    # Will contain the main Literal-> Clause number mapping
@@ -54,8 +51,6 @@ def create_watchList(clauses,M,num_var):          # Create the 2-literal watch d
         literal_watch[A].append(i)                 #add clause to watch of those literals
         literal_watch[B].append(i)
     return literal_watch,clauses_literal_watched
-
-
 
 # Function to propogate using 2-literal watch
 
@@ -86,8 +81,6 @@ def two_watch_propogate(clauses,literal_watch,clauses_literal_watched,M,variable
     return -1,literal_watch
 
 
-
-
 def check_status(clause,M,A,B):
     unit = 0
     if A in M or B in M:                   # if one watch satisfied, nothing to do 
@@ -108,8 +101,6 @@ def check_status(clause,M,A,B):
         return "Unresolved",M,sym[0],sym[1],unit   # else return two new unsatisfied variables to use for Literal_watch
 
 
-
-
 def RandomRestart(M,back,decide_pos,probability,Restart_count):  
     if random.random() < probability :          # If Generated random probability less than current : RESTART
         M = back[:]
@@ -121,8 +112,6 @@ def RandomRestart(M,back,decide_pos,probability,Restart_count):
         if Restart_count > len(M) + 10:         #avoid restarts if already restarted many times
             probability=0
     return probability,Restart_count
-
-
 
 
 def verify(M,clauses) :                  # Verify the Solution in M for SAT
@@ -137,15 +126,11 @@ def verify(M,clauses) :                  # Verify the Solution in M for SAT
     return True
 
 
-
-
 def Analyze_Conflict(M, conflict,decide_pos):  #for simplicity : ALL DECISIONs made till now are a Learned Clause 
     learn = []
     for x in decide_pos:
         learn.append(-M[x])
     return learn
-
-
 
 
 def all_vars_assigned(num_var ,M_len):        # Returns True if all variables already assigne , False otherwise
@@ -154,13 +139,9 @@ def all_vars_assigned(num_var ,M_len):        # Returns True if all variables al
     return False
 
 
-
-
 def assign(variable,M,decide_pos):             # Adds the decision literal to M and correponding update to decision level
     decide_pos.append(len(M))
     M.append(variable)
-
-
 
 
 def add_learned_clause_to(clauses,literal_watch,clauses_literal_watched,Learned_c,M):
@@ -182,8 +163,6 @@ def add_learned_clause_to(clauses,literal_watch,clauses_literal_watched,Learned_
     return 0
 
 
-
-
 def Backjump(M, dec_level, decide_pos,Imp_count):         #BackJump to decision level by deleting decisions from M and decision positions
     Imp_count = Imp_count + len(M) - len(decide_pos)
     if not decide_pos:
@@ -193,15 +172,11 @@ def Backjump(M, dec_level, decide_pos,Imp_count):         #BackJump to decision 
     del M[dec_level:]
     return 0,-literal,Imp_count
 
-
-
-def progressBar(current, total, barLength = 20) :        # Print progress bar. Just to givee feel of work being done
-    percent = float(current) * 100 / total
-    arrow   = '-' * int(percent/100 * barLength - 1) + '>'
-    spaces  = ' ' * (barLength - len(arrow))
-    print('Progress (num_var:may backtrack): [%s%s] %d ' % (arrow, spaces, current), end='\r')
-
-
+# def progressBar(current, total, barLength = 20) :        # Print progress bar. Just to givee feel of work being done
+#     percent = float(current) * 100 / total
+#     arrow   = '-' * int(percent/100 * barLength - 1) + '>'
+#     spaces  = ' ' * (barLength - len(arrow))
+#     print('Progress (num_var:may backtrack): [%s%s] %d ' % (arrow, spaces, current), end='\r')
 
 def CDCL_solve(clauses,num_var):
     decide_pos = []                             # for Maintaing Decision Level
@@ -209,9 +184,8 @@ def CDCL_solve(clauses,num_var):
     clauses,M = unit_propagation(clauses)                        # Initial Unit Propogation : if conflict - UNSAT
     if clauses == -1 :
         return -1,0,0,0,0                                        # UNSAT
-    back=M[:]                                                    # Keep Initialization Backup for RESTART
-    counter = VSIDS_init(clauses,num_var)                        # Initialize Heuristic counter
-    
+    back=M[:]   
+    vsids=VSIDS(clauses,num_var)                                                 # Keep Initialization Backup for RESTART
     # Initialize TWO LITERAL WATCH data Structure :
     literal_watch,clauses_literal_watched = create_watchList(clauses,M,num_var)
 
@@ -219,16 +193,14 @@ def CDCL_solve(clauses,num_var):
     Restart_count = Learned_count = Decide_count = Imp_count = 0
     
     while not all_vars_assigned(num_var , len(M)) :             # While variables remain to assign
-        variable = VSIDS_decide(counter,M,num_var)                      # Decide : Pick a variable
+        variable = vsids.VSIDS_decide(M,num_var)                      # Decide : Pick a variable
         Decide_count += 1
-        progressBar(len(M),num_var)                             # print progress    
         assign(variable,M,decide_pos)
         conflict,literal_watch = two_watch_propogate(clauses,literal_watch,clauses_literal_watched,M,variable)         # Deduce by Unit Propogation
         
-        
         while conflict != -1 :
-            VSIDS_conflict(counter,conflict)                    # Incerements counter of literalts in conflict
-            counter=VSIDS_decay(counter,num_var)                # Decay counters by 5%
+            vsids.VSIDS_conflict(conflict)                    # Incerements counter of literalts in conflict
+            vsids.VSIDS_decay(num_var)                # Decay counters by 5%
 
             Learned_c = Analyze_Conflict(M, conflict,decide_pos)      #Diagnose Conflict
 
