@@ -1,5 +1,4 @@
 from pysat.solvers import Glucose3
-from pysat.formula import CNF
 
 def cdcl_sat_solver(cnf_clauses):
     # Create a solver instance with proof generation enabled
@@ -20,11 +19,9 @@ def cdcl_sat_solver(cnf_clauses):
     decisions = []
     model = None
     satisfiable = False
-
     while True:
         # Choose a variable to make a decision based on the VSIDS heuristic
         decision_variable = choose_variable(variable_scores)
-
         # If there are no more decisions, the problem is solved
         if decision_variable is None:
             model = solver.get_model()
@@ -102,7 +99,6 @@ def backtrack(decisions, learned_clause):
         var = abs(lit)
         if var in decisions:
             backtrack_level = min(backtrack_level, decisions.index(var) + 1)
-    print(decisions,learned_clause)
     return decisions[:backtrack_level]
 
 
