@@ -1,9 +1,10 @@
 import random
 from solver.vsids import VSIDS
 from solver.propagation import Propagation
-
-
+from solver.proof_generation import ProofConstructor
 class CDCL_SAT_SOLVER:
+    proof_generator=ProofConstructor()
+    
     def create_watchList(self,clauses,M,num_var):          # Create the 2-literal watch data structure
         literal_watch = {}                    # Will contain the main Literal-> Clause number mapping
         clauses_literal_watched = []          # The reverse,i.e. Clause-> Literal mapping
