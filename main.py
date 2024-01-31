@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request
 import os
-from utils.file_utility import read_cnf_file,read_cnf_text
+from utils.file_utility import read_cnf_file,read_cnf_text,read_file
 from solver.cdcl_solver import CDCL_SAT_SOLVER
 
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return render_template('index.html')
+    file_names = os.listdir('public')
+    return render_template('index.html',file_names=file_names)
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -22,14 +23,28 @@ def upload():
     # For example, you can save it or perform operations on its content
     file.save(os.path.join('public', file.filename))
     num_var,num_claus,clauses=read_cnf_file('public/'+file.filename)
-    sat_solver = CDCL_SAT_SOLVER()  
-    solution=sat_solver.solve(clauses,num_var)
+    sat_solver = CDCL_SAT_SOLVER()
+    solution = sat_solver.solve(clauses, num_var)
     if solution[0] != -1:
         print("Assignment verified")
         assn = solution[0][:]
         assn.sort(key=abs)
-        return render_template('result.html',reuslt="\n".join(str(lit) for lit in assn))
-    else :
+        return render_template('result.html',result="\n".join(str(lit) for lit in assn))
+    else:
+        return render_template('result.html')
+        
+@app.route('/solve', methods=['POST'])
+def salve():
+    file = request.form['file']
+    num_var,num_claus,clauses=read_cnf_file('public/'+file)
+    sat_solver = CDCL_SAT_SOLVER()
+    solution = sat_solver.solve(clauses, num_var)
+    if solution[0] != -1:
+        print("Assignment verified")
+        assn = solution[0][:]
+        assn.sort(key=abs)
+        return render_template('result.html',result="\n".join(str(lit) for lit in assn))
+    else:
         return render_template('result.html')
         
 
@@ -51,6 +66,10 @@ def upload_text():
         else:
             return render_template('result.html')
     return 'not valid input'
+@app.route('/show-problem/<name>')
+def read(name):
+    text= read_file('public/'+name)
+    return text
 if __name__ == '__main__':
     app.run(debug=True)
 

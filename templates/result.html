@@ -23,12 +23,10 @@
     <h1>SAT Solver Result</h1>
     
     {% if result %}
-        <p>Assignment verified:</p>
-        <ul>
+        <p>Problem verified:</p>
             {% for lit in result %}
-                <li>{{ lit }}</li>
+                {{ lit }}
             {% endfor %}
-        </ul>
     {% else %}
         <p>UNSAT - No satisfying assignment found.</p>
     {% endif %}
