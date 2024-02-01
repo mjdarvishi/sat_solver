@@ -1,7 +1,11 @@
 import random
 from solver.vsids import VSIDS
 from solver.propagation import Propagation
+from solver.proof_generator import ProofGenerator
+
 class CDCL_SAT_SOLVER:
+    def __init__(self):
+        self.proof_generator = ProofGenerator()
      # Create the 2-literal watch data structure
     def watchList_creation(self,clauses,M,num_var):         
         literal_watch = {}                  
@@ -111,15 +115,18 @@ class CDCL_SAT_SOLVER:
                 Learned_count += 1
                 jump_status,var,Imp_count = self.Backjump(M, dec_level, decide_pos,Imp_count)  
 
-                if jump_status == -1:                                  
-                    return -1,Restart_count,Learned_count,Decide_count,Imp_count
+                if jump_status == -1:                               
+                    return -1,Restart_count,Learned_count,Decide_count,Imp_count,self.proof_generator.proof_steps 
                 M.append(var)                                    
                 
                 probability,Restart_count = self.restart_randomly(M,back,decide_pos,probability,Restart_count)      
                 conflict,literal_watch = propagation.two_watch(clauses,literal_watch,clauses_literal_watched,M,var)
-
-                
-
-        return M,Restart_count,Learned_count,Decide_count,Imp_count
+                #Proof
+                if  len(self.proof_generator.proof_steps)<500:
+                    if isinstance(dec_level, tuple):
+                        # Choose one of the tuple elements or convert the tuple to a single value based on your logic
+                        dec_level = dec_level[0]
+                    self.proof_generator.add_proof_step(clauses_literal_watched[dec_level][0], clauses_literal_watched[dec_level][1],Learned_c) 
+        return M,Restart_count,Learned_count,Decide_count,Imp_count,self.proof_generator.proof_steps
         
 

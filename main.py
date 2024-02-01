@@ -32,7 +32,7 @@ def upload():
         print("Assignment verified")
         assn = solution[0][:]
         assn.sort(key=abs)
-        return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time)
+        return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time,clauses=solution)
     else:
         return render_template('result.html',num_var=num_var,num_claus=num_claus,clauses=solution,time=elapsed_time)
         
@@ -49,7 +49,7 @@ def salve():
         print("Assignment verified")
         assn = solution[0][:]
         assn.sort(key=abs)
-        return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time)
+        return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time,clauses=solution)
     else:
         return render_template('result.html',num_var=num_var,num_claus=num_claus,clauses=solution,time=elapsed_time)
         
@@ -70,10 +70,11 @@ def upload_text():
             print("Assignment verified")
             assn = solution[0][:]
             assn.sort(key=abs)
-            return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time)
+            return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time,clauses=solution)
         else:
             return render_template('result.html',num_var=num_var,num_claus=num_claus,clauses=solution,time=elapsed_time)
     return 'not valid input'
+
 @app.route('/show-problem/<name>')
 def read(name):
     text= read_file('public/'+name)
