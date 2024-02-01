@@ -45,7 +45,7 @@ def salve():
     solution = sat_solver.solve(clauses, num_var)
     end_time = time.time()
     elapsed_time = end_time - start_time
-    if solution[0] != -1:
+    if solution[0] != -1:   
         print("Assignment verified")
         assn = solution[0][:]
         assn.sort(key=abs)
