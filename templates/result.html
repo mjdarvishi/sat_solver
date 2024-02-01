@@ -72,6 +72,9 @@
             <p>Time: {{ time }}</p>
         {% else %}
             <p class="unsatisfy">UNSAT</p>
+            <p>Number of Variables: {{ num_var }}</p>
+            <p>Number of Clauses: {{ num_claus }}</p>
+            <p>Time: {{ time }}</p>
         {% endif %}
 
         <p><a href="/">Back to Previous Page</a></p>

@@ -34,7 +34,7 @@ def upload():
         assn.sort(key=abs)
         return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time)
     else:
-        return render_template('result.html')
+        return render_template('result.html',num_var=num_var,num_claus=num_claus,clauses=solution,time=elapsed_time)
         
 @app.route('/solve', methods=['POST'])
 def salve():
@@ -51,7 +51,7 @@ def salve():
         assn.sort(key=abs)
         return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time)
     else:
-        return render_template('result.html')
+        return render_template('result.html',num_var=num_var,num_claus=num_claus,clauses=solution,time=elapsed_time)
         
 
 @app.route('/upload-text', methods=['POST'])
@@ -72,7 +72,7 @@ def upload_text():
             assn.sort(key=abs)
             return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus,time=elapsed_time)
         else:
-            return render_template('result.html')
+            return render_template('result.html',num_var=num_var,num_claus=num_claus,clauses=solution,time=elapsed_time)
     return 'not valid input'
 @app.route('/show-problem/<name>')
 def read(name):
