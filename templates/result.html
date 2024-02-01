@@ -27,9 +27,16 @@
             {% for lit in result %}
                 {{ lit }}
             {% endfor %}
+            <p>
+                {%num_var%}
+            </p>
+            <p>
+                {%num_claus%}
+            </p>
     {% else %}
         <p>UNSAT - No satisfying assignment found.</p>
     {% endif %}
+
     
     <p><a href="/">Back to Prevoise Page</a></p>
 </body>

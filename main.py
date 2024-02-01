@@ -29,7 +29,7 @@ def upload():
         print("Assignment verified")
         assn = solution[0][:]
         assn.sort(key=abs)
-        return render_template('result.html',result="\n".join(str(lit) for lit in assn))
+        return render_template('result.html',result="\n".join(str(lit) for lit in assn),num_var=num_var,num_claus=num_claus)
     else:
         return render_template('result.html')
         
