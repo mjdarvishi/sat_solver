@@ -6,30 +6,46 @@
     <title>SAT Solver Result</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f7f7f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
             color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
         }
 
         h1 {
-            color: #1a237e;
+            color: #4CAF50;
+            font-size: 2em;
         }
 
         p {
             margin-bottom: 10px;
+            font-size: 1.2em;
         }
 
         .satisfy {
-            color: green;
+            color: #4CAF50;
+            font-weight: bold;
         }
 
         .unsatisfy {
-            color: red;
+            color: #FF5252;
+            font-weight: bold;
         }
 
         a {
-            color: #1a237e;
+            color: #2196F3;
             text-decoration: none;
         }
 
@@ -39,25 +55,25 @@
     </style>
 </head>
 <body>
-    <h1>SAT Solver Result</h1>
+    <div class="container">
+        {% if result %}
+            <h1>
+                SAT
+            </h1>
+            <p>Problem verified:
+            </p>
+            <p>
+                <span class="{% if result %}satisfy{% else %}unsatisfy{% endif %}">
+                    {% for lit in result %}{{ lit }} {% endfor %}
+                </span>
+            </p>
+            <p>Number of Variables: {{ num_var }}</p>
+            <p>Number of Clauses: {{ num_claus }}</p>
+        {% else %}
+            <p class="unsatisfy">UNSAT</p>
+        {% endif %}
 
-    {% if result %}
-        <h1>
-            <span class="{{ 'satisfy' if result else 'unsatisfy' }}">
-                {{ 'Satisfy' if result else 'Unsatisfy' }}
-            </span>
-        </h1>
-        <p>Problem verified:
-            <span class="{{ 'satisfy' if result else 'unsatisfy' }}">
-                {% for lit in result %}{{ lit }} {% endfor %}
-            </span>
-        </p>
-        <p>Number of Variables: {{ num_var }}</p>
-        <p>Number of Clauses: {{ num_claus }}</p>
-    {% else %}
-        <p class="unsatisfy">UNSAT - No satisfying assignment found.</p>
-    {% endif %}
-
-    <p><a href="/">Back to Previous Page</a></p>
+        <p><a href="/">Back to Previous Page</a></p>
+    </div>
 </body>
 </html>
