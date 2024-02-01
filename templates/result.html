@@ -8,36 +8,56 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #f7f7f7;
+            color: #333;
         }
 
         h1 {
-            color: #333;
+            color: #1a237e;
         }
 
         p {
             margin-bottom: 10px;
         }
+
+        .satisfy {
+            color: green;
+        }
+
+        .unsatisfy {
+            color: red;
+        }
+
+        a {
+            color: #1a237e;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <h1>SAT Solver Result</h1>
-    
+
     {% if result %}
-        <p>Problem verified:</p>
-            {% for lit in result %}
-                {{ lit }}
-            {% endfor %}
-            <p>
-                {%num_var%}
-            </p>
-            <p>
-                {%num_claus%}
-            </p>
+        <h1>
+            <span class="{{ 'satisfy' if result else 'unsatisfy' }}">
+                {{ 'Satisfy' if result else 'Unsatisfy' }}
+            </span>
+        </h1>
+        <p>Problem verified:
+            <span class="{{ 'satisfy' if result else 'unsatisfy' }}">
+                {% for lit in result %}{{ lit }} {% endfor %}
+            </span>
+        </p>
+        <p>Number of Variables: {{ num_var }}</p>
+        <p>Number of Clauses: {{ num_claus }}</p>
     {% else %}
-        <p>UNSAT - No satisfying assignment found.</p>
+        <p class="unsatisfy">UNSAT - No satisfying assignment found.</p>
     {% endif %}
 
-    
-    <p><a href="/">Back to Prevoise Page</a></p>
+    <p><a href="/">Back to Previous Page</a></p>
 </body>
 </html>
