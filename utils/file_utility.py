@@ -42,8 +42,8 @@ def read_cnf_file(file_path):
     return num_variables, num_clauses, cnf_clauses
 
 def read_file(file_path):
-    f = open(file_path, "r")
-    return f.read()
+    with open(file_path, "r") as f:
+        return f.readlines()
 
 def read_cnf_text(cnf_text):
     cnf_clauses = []

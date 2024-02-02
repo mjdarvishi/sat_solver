@@ -77,21 +77,8 @@ def upload_text():
 
 @app.route('/show-problem/<name>')
 def read(name):
-    text= read_file('public/'+name)
-    return text
+    file_path = 'public/' + name
+    content = read_file(file_path)
+    return render_template('show_problem.html', content=content)
 if __name__ == '__main__':
     app.run(debug=True,port=5002,host='0.0.0.0')
-
-
-
-# # Get CNF clauses from the user
-# print("Enter CNF clauses, one clause per line. Enter an empty line to finish.")
-# cnf_input = []
-# while True:
-#     clause_input = input("Clause: ")
-#     if not clause_input:
-#         break
-#     cnf_input.append(list(map(int, clause_input.split())))
-
-# # Call the solver function
-# cdcl_sat_salver(cnf_input)
