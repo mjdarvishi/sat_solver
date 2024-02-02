@@ -1,3 +1,27 @@
+import re
+import re
+
+def has_logical_operators(line):
+    return any(op in line for op in ['AND', 'OR'])
+
+def convert_to_cnf_from_custom_format(input_string):
+    input_string = input_string.replace('AND', ' & ').replace('OR', ' | ').replace('NOT', ' ~')
+
+    input_string = input_string.replace('(', '').replace(')', '')
+
+    clauses = input_string.split('AND')
+
+    cnf_clauses = []
+    for clause in clauses:
+        literals = clause.strip().split('OR')
+        cnf_clause = []
+        for literal in literals:
+            cnf_clause.append(literal.strip())
+        cnf_clauses.append(cnf_clause)
+
+    return cnf_clauses
+
+
 def read_cnf_file(file_path):
     cnf_clauses = []
     num_variables = 0
