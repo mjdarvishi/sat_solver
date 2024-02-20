@@ -8,7 +8,6 @@ Also you can upload new files after that it will solve and since then you can se
 
 ## Run
 This is the link of Instance Application that is created to test and show the result of the tested problems.
-<a href="http://87.248.155.162:5002/">Go to web site</a>
 For running on windows:
 pip install -r requirements.txt
 py ./main.py
